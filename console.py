@@ -1,120 +1,112 @@
+# console.py
+
 import cmd
-import shlex
-from models import storage
 from models.base_model import BaseModel
-from models.user import User
-from models.place import Place
-from models.state import State
-from models.city import City
-from models.amenity import Amenity
-from models.review import Review
+from models import storage
+
 
 class HBNBCommand(cmd.Cmd):
     prompt = "(hbnb) "
 
-    def do_quit(self, arg):
-        """Exit the program"""
-        return True
-
-    def do_EOF(self, arg):
-        """Exit the program"""
-        print()  # Print a newline before exiting
-        return True
-
-    def emptyline(self):
-        """Do nothing on empty line"""
-        pass
-
     def do_create(self, arg):
-        """Creates a new instance of a class"""
+        """Creates a new instance of BaseModel, saves it to JSON file, and prints the id."""
         if not arg:
             print("** class name missing **")
             return
-        class_name = arg.split()[0]
-        if class_name not in globals():
+        try:
+            new_instance = eval(arg)()
+            new_instance.save()
+            print(new_instance.id)
+        except NameError:
             print("** class doesn't exist **")
-            return
-        new_instance = globals()[class_name]()
-        new_instance.save()
-        print(new_instance.id)
 
     def do_show(self, arg):
-        """Prints the string representation of an instance"""
+        """Prints the string representation of an instance based on class name and id."""
+        args = arg.split()
         if not arg:
             print("** class name missing **")
             return
-        args = arg.split()
-        if args[0] not in storage.classes():
+        try:
+            if args[0] not in globals():
+                raise NameError
+            if len(args) < 2:
+                print("** instance id missing **")
+                return
+            objs = storage.all()
+            key = args[0] + "." + args[1]
+            if key in objs:
+                print(objs[key])
+            else:
+                print("** no instance found **")
+        except NameError:
             print("** class doesn't exist **")
-            return
-        if len(args) < 2:
-            print("** instance id missing **")
-            return
-        key = args[0] + "." + args[1]
-        if key not in storage.all():
-            print("** no instance found **")
-            return
-        print(storage.all()[key])
 
     def do_destroy(self, arg):
-        """Deletes an instance"""
+        """Deletes an instance based on class name and id."""
+        args = arg.split()
         if not arg:
             print("** class name missing **")
             return
-        args = arg.split()
-        if args[0] not in storage.classes():
+        try:
+            if args[0] not in globals():
+                raise NameError
+            if len(args) < 2:
+                print("** instance id missing **")
+                return
+            objs = storage.all()
+            key = args[0] + "." + args[1]
+            if key in objs:
+                objs.pop(key)
+                storage.save()
+            else:
+                print("** no instance found **")
+        except NameError:
             print("** class doesn't exist **")
-            return
-        if len(args) < 2:
-            print("** instance id missing **")
-            return
-        key = args[0] + "." + args[1]
-        if key not in storage.all():
-            print("** no instance found **")
-            return
-        del storage.all()[key]
-        storage.save()
 
     def do_all(self, arg):
-        """Prints all instances"""
-        if arg and arg not in storage.classes():
-            print("** class doesn't exist **")
+        """Prints all string representations of all instances based or not on class name."""
+        args = arg.split()
+        objs = storage.all()
+        if not arg:
+            print([str(objs[obj]) for obj in objs])
             return
-        objects = []
-        for key, obj in storage.all().items():
-            if not arg or key.split('.')[0] == arg:
-                objects.append(str(obj))
-        print(objects)
+        try:
+            if args[0] not in globals():
+                raise NameError
+            print([str(objs[obj]) for obj in objs if args[0] in obj])
+        except NameError:
+            print("** class doesn't exist **")
 
     def do_update(self, arg):
-        """Updates an instance"""
+        """Updates an instance based on class name and id by adding or updating attribute."""
+        args = arg.split()
         if not arg:
             print("** class name missing **")
             return
-        args = shlex.split(arg)
-        if args[0] not in storage.classes():
-            print("** class doesn't exist **")
-            return
-        if len(args) < 2:
-            print("** instance id missing **")
-            return
-        key = args[0] + "." + args[1]
-        if key not in storage.all():
-            print("** no instance found **")
-            return
-        if len(args) < 3:
-            print("** attribute name missing **")
-            return
-        if len(args) < 4:
-            print("** value missing **")
-            return
-        obj = storage.all()[key]
         try:
-            attr_type = type(getattr(obj, args[2]))
-            setattr(obj, args[2], attr_type(args[3]))
-            obj.save()
-        except AttributeError:
-            pass
+            if args[0] not in globals():
+                raise NameError
+            if len(args) < 2:
+                print("** instance id missing **")
+                return
+            if len(args) < 3:
+                print("** attribute name missing **")
+                return
+            if len(args) < 4:
+                print("** value missing **")
+                return
+            objs = storage.all()
+            key = args[0] + "." + args[1]
+            if key in objs:
+                obj = objs[key]
+                setattr(obj, args[2], args[3])
+                obj.save()
+            else:
+                print("** no instance found **")
+        except NameError:
+            print("** class doesn't exist **")
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     HBNBCommand().cmdloop()
+
