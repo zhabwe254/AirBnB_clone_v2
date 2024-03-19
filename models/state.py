@@ -1,13 +1,16 @@
 #!/usr/bin/python3
-"""Module for State class."""
-from models.base_model import BaseModel
+"""Defines the State class."""
+from models.base_model import BaseModel, Base
+from sqlalchemy import Column, String
+from sqlalchemy.orm import relationship
 
+class State(BaseModel, Base):
+    """Represents a state within a country."""
 
-class State(BaseModel):
-    """State class that inherits from BaseModel."""
-
-    name = ""
+    __tablename__ = 'states'
+    name = Column(String(128), nullable=False)
+    cities = relationship('City', backref='state', cascade='all, delete')
 
     def __init__(self, *args, **kwargs):
-        """Initializes a new instance of State."""
+        """Initialize a new State."""
         super().__init__(*args, **kwargs)
