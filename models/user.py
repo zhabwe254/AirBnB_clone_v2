@@ -1,20 +1,17 @@
 #!/usr/bin/python3
-"""Module for User class."""
+"""Defines the User class."""
+from models.base_model import BaseModel, Base
+from sqlalchemy import Column, String
 
-from models.base_model import BaseModel
+class User(BaseModel, Base):
+    """Represents a user of the system."""
 
+    __tablename__ = 'users'
+    email = Column(String(128), nullable=False)
+    password = Column(String(128), nullable=False)
+    first_name = Column(String(128))
+    last_name = Column(String(128))
 
-class User(BaseModel):
-    """Class representing a User.
-
-    Attributes:
-        email (str): The email of the User.
-        password (str): The password of the User.
-        first_name (str): The first name of the User.
-        last_name (str): The last name of the User.
-    """
-
-    email = ""
-    password = ""
-    first_name = ""
-    last_name = ""
+    def __init__(self, *args, **kwargs):
+        """Initialize a new User."""
+        super().__init__(*args, **kwargs)
