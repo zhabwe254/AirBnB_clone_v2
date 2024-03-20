@@ -1,17 +1,10 @@
-<<<<<<< HEAD
-""" Module for Place class """
-=======
 #!/usr/bin/python3
 """ Place Module for HBNB project """
-
->>>>>>> 4b4e94bc6446dad7559491f6d66e681e2b57fc87
 from models.base_model import BaseModel
 
 
 class Place(BaseModel):
-<<<<<<< HEAD
-    """ Defines attributes for Place class """
-=======
+
     """Represent a place.
 
     Attributes:
@@ -27,7 +20,8 @@ class Place(BaseModel):
         longitude (float): The longitude of the place.
         amenity_ids (list): A list of Amenity ids.
     """
->>>>>>> 4b4e94bc6446dad7559491f6d66e681e2b57fc87
+
+ """ A place to stay """
 
     city_id = ""
     user_id = ""
