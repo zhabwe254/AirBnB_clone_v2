@@ -22,14 +22,26 @@ class BaseModel:
             models.storage.new(self)
 
     def __str__(self):
+<<<<<<< HEAD
         """ Return the print/str representation of an instance """
         class_name = self.__class__.__name__
         return "[{}] ({}) {}".format(class_name, self.id, self.__dict__)
+=======
+        """Returns a human-readable string representation
+        of an instance."""
+        cls = (str(type(self)).split('.')[-1]).split('\'')[0]
+        return "[{}] ({}) {}".format(cls, self.id, self.__dict__)
+>>>>>>> 4b4e94bc6446dad7559491f6d66e681e2b57fc87
 
     def save(self):
         """ Update the updated_at attribute and save the instance """
         self.updated_at = datetime.now()
+<<<<<<< HEAD
         models.storage.save()
+=======
+        storage.save()
+        storage.new(self)
+>>>>>>> 4b4e94bc6446dad7559491f6d66e681e2b57fc87
 
     def to_dict(self):
         """ Return a dictionary representation of an instance """
