@@ -39,14 +39,15 @@ class BaseModel:
     def __str__(self):
         """Returns a human-readable string representation
         of an instance."""
-        cls_name = type(self).__name__
-        return "[{}] ({}) {}".format(cls_name, self.id, self.__dict__)
+        cls = (str(type(self)).split('.')[-1]).split('\'')[0]
+        return "[{}] ({}) {}".format(cls, self.id, self.__dict__)
 
     def save(self):
         """Updates the updated_at attribute
         with the current datetime."""
         self.updated_at = datetime.now()
         storage.save()
+        storage.new(self)
 
     def to_dict(self):
         """Returns a dictionary representation of an instance."""
