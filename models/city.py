@@ -10,9 +10,10 @@ class City(BaseModel,Base):
 
     Attributes:
 >>City inherits from BaseModel and Base
->>state_id - representing a string column of maximum 60 characters
->> name -representing a string column of maximum 128 characters. nullable=False ensures that the value can't be null.
 >>__tablename__ -represents the table name, cities
+>> name -representing a string column of maximum 128 characters
+>>state_id - representing a string column of maximum 60 characters
+
     """
 
     __tablename__ = "cities"
