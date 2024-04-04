@@ -1,43 +1,37 @@
 #!/usr/bin/python3
-"""Fabric script that distributes an archive to web servers using do_deploy"""
+"""Fabric script to deploy web_static to web servers"""
 
-from fabric.api import *
+from fabric.api import env, put, run
 from os.path import exists
 
-env.hosts = ['<IP web-01>', '<IP web-02>']
-env.user = 'ubuntu'
+env.hosts = ['<IP web-01>', 'IP web-02']
+
 
 def do_deploy(archive_path):
-    """Distributes an archive to web servers and deploys it"""
-    if not os.path.exists(archive_path):
+    """Deploy archive to web servers"""
+    if not exists(archive_path):
         return False
 
     try:
-        # Upload archive
-        put(archive_path, '/tmp/')
-        
-        # Create directory
-        folder_name = archive_path.split('/')[-1].split('.')[0]
-        run('mkdir -p /data/web_static/releases/{}/'.format(folder_name))
-        
-        # Uncompress archive
-        run('tar -xzf /tmp/{}.tgz -C /data/web_static/releases/{}/'.format(folder_name, folder_name))
-        
-        # Delete archive
-        run('rm /tmp/{}.tgz'.format(folder_name))
-        
-        # Move contents out of subdirectory
-        run('mv /data/web_static/releases/{}/web_static/* /data/web_static/releases/{}/'.format(folder_name, folder_name))
-        
-        # Remove empty directory
-        run('rm -rf /data/web_static/releases/{}/web_static'.format(folder_name))
-        
-        # Delete symbolic link
-        run('rm -rf /data/web_static/current')
-        
-        # Create new symbolic link
-        run('ln -s /data/web_static/releases/{}/ /data/web_static/current'.format(folder_name))
-        
+        filename = archive_path.split('/')[-1]
+        folder_name = filename.split('.')[0]
+        path = "/data/web_static/releases/{}/".format(folder_name)
+
+	put(archive_path, '/tmp/')
+	run("mkdir -p {}".format(path))
+
+ 	run("tar -xzf /tmp/{} -C {}".format(filename, path))
+
+        run("rm /tmp/{}".format(filename))
+
+        run("mv {}web_static/* {}".format(path, path))
+
+        run("rm -rf {}web_static".format(path))
+
+        run("rm -rf /data/web_static/current")
+
+        run("ln -s {} /data/web_static/current".format(path))
+
         return True
     except:
         return False
