@@ -6,21 +6,23 @@ from flask import Flask, render_template
 from models import storage
 from models.state import State
 
-app = Flask(__name__)
-
-
-@app.route('/states_list', strict_slashes=False)
-def states_list():
-    """Displays a HTML page with a list of all State objects sorted by name."""
-    states = storage.all(State).values()
-    return render_template('7-states_list.html', states=states)
+app = Flask(__nam__)
+app.url_map.strict_slashes = False
 
 
 @app.teardown_appcontext
-def close_storage(exc):
-    """Removes the current SQLAlchemy session."""
+def dispose(exception):
+    """ Remove current session """
     storage.close()
 
 
-if __name__ == "__main__":
-    app.run(host='0.0.0.0', port='5000')
+@app.route('/states_list')
+def states():
+    """ Display list of all the states """
+    states = storage.all(State)
+    states_list = list(states.values())
+    return render_template('7-states_list.html', states=states_list)
+
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5000)
