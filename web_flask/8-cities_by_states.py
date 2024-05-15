@@ -8,25 +8,20 @@ from models.state import State
 
 
 app = Flask(__name__)
-
+app.url_map.strict_slashes = False
 
 @app.teardown_appcontext
-def teardown_db(exception):
-    """
-    Closes the current SQLAlchemy Session after each request
-    """
+def dispose(exception):
+    """ Remove current session """
     storage.close()
 
 
-@app.route('/cities_by_states', strict_slashes=False)
-def cities_by_states():
-    """
-    Renders an HTML page with a list of all State objects
-    and their related City objects
-    """
-    states = storage.all(State).values()
-    states = sorted(states, key=lambda x: x.name)
-    return render_template('8-cities_by_states.html', states=states)
+@app.route('/cities_by_states')
+def states():
+    """ Display list of all the states """
+    states = storage.all(State)
+    states_list = list(states.values())
+    return render_template('8-cities_by_states.html', states=states_list)
 
 
 if __name__ == '__main__':
